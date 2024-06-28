@@ -1,11 +1,11 @@
 import mysql from "mysql";
 
 export const db = mysql.createConnection({
-    host: "localhost",
-    user: "root",
-    password: "root",
-    port: "3306",
-    database: "guardapet_database"
+    host: process.env.POSTGRES_HOST,
+    user: process.env.POSTGRES_USER,
+    password: process.env.POSTGRES_PASSWORD,
+    database: process.env.POSTGRES_DATABASE,
+    port: "3306"
 });
 
 db.connect((err) => {
