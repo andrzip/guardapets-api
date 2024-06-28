@@ -25,13 +25,14 @@ export const getUsers = (req, res) => {
 }
 
 export const addUser = (req, res) => {
-    const sql = "INSERT INTO users (`name`, `email`, `password`, `phone`, `birthdate`, `address`, `state`, `city`) VALUES (?)";
+    const sql = "INSERT INTO users (`name`, `email`, `password`, `phone`, `doc`, `birthdate`, `address`, `state`, `city`) VALUES (?)";
 
     const values = [
         req.body.name,
         req.body.email,
         req.body.password,
         req.body.phone,
+        req.body.doc,
         req.body.birthdate,
         req.body.address,
         req.body.state,
@@ -45,13 +46,14 @@ export const addUser = (req, res) => {
 }
 
 export const updateUser = (req, res) => {
-    const sql = "UPDATE users SET `name` = ?, `email` = ?, `password` = ?, `phone` = ?, `birthdate` = ?, `address` = ?, `state` = ?, `city` = ? WHERE `user_id` = ?";
+    const sql = "UPDATE users SET `name` = ?, `email` = ?, `password` = ?, `phone` = ?, `doc` = ?, `birthdate` = ?, `address` = ?, `state` = ?, `city` = ? WHERE `user_id` = ?";
 
     const values = [
         req.body.name,
         req.body.email,
         req.body.password,
         req.body.phone,
+        req.body.doc,
         req.body.birthdate,
         req.body.address,
         req.body.state,
