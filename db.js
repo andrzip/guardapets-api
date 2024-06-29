@@ -1,11 +1,11 @@
 import mysql from "mysql";
 
 export const db = mysql.createConnection({
-    host: process.env.MYSQLHOST || "localhost",
-    user: process.env.POSTGRES_USER || "root",
-    password: process.env.MYSQLPASSWORD || "root",
-    database: process.env.MYSQLDATABASE ||"guardapet_database",
-    port: "51991"
+    host: process.env.MYSQLHOST,
+    user: process.env.POSTGRES_USER,
+    password: process.env.MYSQLPASSWORD,
+    database: process.env.MYSQLDATABASE,
+    port: process.env.MYSQLPORT
 });
 
 db.connect((err) => {
