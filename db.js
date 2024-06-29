@@ -5,7 +5,7 @@ export const db = mysql.createConnection({
     user: process.env.POSTGRES_USER || "root",
     password: process.env.MYSQLPASSWORD || "root",
     database: process.env.MYSQLDATABASE ||"guardapet_database",
-    port: "3306"
+    port: "51991"
 });
 
 db.connect((err) => {
