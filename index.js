@@ -12,5 +12,5 @@ app.use(cors());
 app.use("/users", userRoutes);
 
 app.listen(port, () => {
-    console.log("Servidor API online!");
+    console.log(`✅ - Servidor Online! PORT -> [${port}]`);
 });

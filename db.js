@@ -10,8 +10,8 @@ export const db = mysql.createConnection({
 
 db.connect((err) => {
     if (err) {
-        console.error('Erro conectando ao MySQL:', err);
+        console.error('❌ - MYSQL Erro de Conexão:\n', err.message);
         return;
     }
-    console.log('Database conectada!');
+    console.log(`✅ - Database Conectada! HOST -> [${process.env.POSTGRES_HOST}]`);
 });
