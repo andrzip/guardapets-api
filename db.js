@@ -1,11 +1,10 @@
-import mysql from "mysql";
+import mysql from "mysql2";
 
 export const db = mysql.createConnection({
-    host: process.env.MYSQLHOST,
-    user: process.env.POSTGRES_USER,
-    password: process.env.MYSQLPASSWORD,
-    database: process.env.MYSQLDATABASE,
-    port: process.env.MYSQLPORT
+    host: "localhost",
+    user: "root",
+    password: "root",
+    database: "guardapet_database",
 });
 
 db.connect((err) => {
@@ -13,5 +12,5 @@ db.connect((err) => {
         console.error('❌ - MYSQL Erro de Conexão:\n', err.message);
         return;
     }
-    console.log(`✅ - Database Conectada! HOST -> [${process.env.MYSQLHOST}]`);
+    console.log(`✅ - Database Conectada! HOST -> [localhost]`);
 });
