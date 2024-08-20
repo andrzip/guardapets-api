@@ -22,9 +22,8 @@ export const getAnimal = (req, res) => {
 
 // Função para adicionar um novo animal e vinculá-lo a um usuário
 export const addAnimal = (req, res) => {
-    const sqlInsertAnimal = "INSERT INTO animals (`animal_name`, `animal_type`, `animal_age`, `animal_size`, `animal_gender`, `animal_desc`, `animal_picurl`) VALUES (?)";
-
-    const animalValues = [
+    const insertAnimalQuery = "INSERT INTO animals (`animal_name`, `animal_type`, `animal_age`, `animal_size`, `animal_gender`, `animal_desc`, `animal_picurl`) VALUES (?)";
+    const animalData = [
         req.body.animal_name,
         req.body.animal_type,
         req.body.animal_age,
@@ -34,31 +33,35 @@ export const addAnimal = (req, res) => {
         req.body.animal_picurl
     ];
 
-    db.query(sqlInsertAnimal, [animalValues], (err, data) => {
+    // Insere o animal e verifica o resultado da inserção
+    db.query(insertAnimalQuery, [animalData], (err, result) => {
         if (err) return res.json(err);
 
-        const animalId = data.insertId; // ID do animal recém-inserido
-        const userId = req.body.user_id; // ID do usuário ao qual o animal será vinculado
-
-        console.log(data);
-        console.log("ANIMALID: " + animalId);
-        console.log("USERID: " + userId);
-
-        // Inserção do vínculo na tabela registry
-        const sqlRegisterAnimal = "INSERT INTO registry (`user_id`, `animal_id`, `adoption_date`) VALUES (?)";
-
-        const registryValues = [
-            userId,
-            animalId,
-            new Date() // Data e hora atual para adoption_date
-        ];
-
-        db.query(sqlRegisterAnimal, registryValues, (err) => {
+        // Recupera o ID do animal recém-inserido
+        const getAnimalIdQuery = "SELECT LAST_INSERT_ID() AS animal_id"; // Pode não funcionar bem com UUID
+        db.query(getAnimalIdQuery, (err, data) => {
             if (err) return res.json(err);
-            return res.status(200).json("Animal criado e vinculado ao usuário!");
+
+            const animalId = data[0].animal_id; // Confere se o ID é correto
+
+            console.log("ID DO ANIMAL -> " + animalId);
+            console.log("ID DO USUARIO -> " + req.body.user_id);
+
+            const registerAnimalQuery = "INSERT INTO registry (`user_id`, `animal_id`, `adoption_date`) VALUES (?)";
+            const registryData = [
+                req.body.user_id,
+                animalId,
+                new Date()
+            ];
+
+            db.query(registerAnimalQuery, [registryData], (err) => {
+                if (err) return res.json(err);
+                return res.status(200).json("Animal criado e vinculado ao usuário!");
+            });
         });
     });
-}
+};
+
 
 // Função para atualizar um animal existente
 export const updateAnimal = (req, res) => {
