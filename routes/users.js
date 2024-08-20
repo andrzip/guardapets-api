@@ -6,7 +6,7 @@ const router = express.Router();
 router.get("/list", getUsers);
 router.post("/signin", getUser);
 router.post("/signup", addUser);
-router.put("/update/:id", updateUser);
+router.put("/edit/:id", updateUser);
 router.delete("/delete/:id", deleteUser)
 
 export default router;
