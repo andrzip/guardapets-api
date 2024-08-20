@@ -43,10 +43,7 @@ export const addAnimal = (req, res) => {
             if (err) return res.json(err);
 
             const animalId = data[0].animal_id; // Confere se o ID é correto
-
-            console.log("ID DO ANIMAL -> " + animalId);
-            console.log("ID DO USUARIO -> " + req.body.user_id);
-
+            
             const registerAnimalQuery = "INSERT INTO registry (`user_id`, `animal_id`, `adoption_date`) VALUES (?)";
             const registryData = [
                 req.body.user_id,
