@@ -1,5 +1,5 @@
 import { db } from "../db.js";
-import jwt from "jsonwebtoken";
+import { generateToken, setTokenCookie, verifyToken } from "../services/token.js";
 
 export const getUser = (req, res) => {
     const sql = "SELECT * FROM users WHERE `user_email` = ? AND `user_password` = ?";
@@ -16,15 +16,12 @@ export const getUser = (req, res) => {
             return res.status(401).json({ error: "Credenciais de login incorretas" });
         }
 
-        const accessToken = jwt.sign({
-            user_id: userData[0].user_id,
-            user_email: userData[0].user_email
-        },
-            process.env.JWT_KEY
-        );
-        return res.status(200).json({ message: "Login realizado com sucesso", accessToken });
+        const accessToken = generateToken(userData[0]);
+        setTokenCookie(res, accessToken);
+        console.log("COOKIE ARMAZENADO! " + accessToken);
+        return res.status(200).json({ message: "Login realizado com sucesso" });
     });
-}
+};
 
 export const getUsers = (req, res) => {
     const sql = "SELECT * FROM users";
@@ -85,3 +82,19 @@ export const deleteUser = (req, res) => {
         return res.status(200).json("Usuário deletado!");
     });
 }
+
+export const verifyUserToken = (req, res) => {
+    console.log("COOKIES -> " + req.cookies.token);
+    const token = req.cookies.token;
+
+    if (!token) {
+        return res.status(401).json({ error: "Usuário não autenticado" });
+    }
+
+    try {
+        const decoded = verifyToken(token);
+        return res.status(200).json({ user: decoded });
+    } catch (error) {
+        return res.status(401).json({ error: "Token inválido ou expirado" });
+    }
+};
