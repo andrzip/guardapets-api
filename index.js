@@ -12,9 +12,9 @@ const app = express();
 app.use(express.json());
 app.use(
   cors({
-    origin: "https://28xxz5-3000.csb.app",
+    origin: "https://lzcf6n-3000.csb.app",
     credentials: true,
-  }),
+  })
 );
 app.use(cookieParser());
 
