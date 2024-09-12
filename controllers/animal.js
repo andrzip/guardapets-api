@@ -3,7 +3,7 @@ import { verifyToken } from "../services/token.js";
 
 // Função para obter todos os animais
 export const getAnimals = (req, res) => {
-  const sql = "SELECT * FROM animals";
+  const sql = "SELECT * FROM animals WHERE animal_avaliable = 1";
 
   db.query(sql, (err, data) => {
     if (err) return res.json(err);
