@@ -33,7 +33,7 @@ export const addAnimal = (req, res) => {
     // Dados do animal a ser inserido
     const insertAnimalQuery = `
             INSERT INTO animals 
-            (animal_name, animal_type, animal_age, animal_size, animal_gender, animal_desc, animal_picurl) 
+            (animal_name, animal_type, animal_age, animal_size, animal_address, animal_gender, animal_desc, animal_picurl) 
             VALUES (?)`;
 
     const animalData = [
@@ -41,6 +41,7 @@ export const addAnimal = (req, res) => {
       req.body.animal_type,
       req.body.animal_age,
       req.body.animal_size,
+      req.body.animal_address,
       req.body.animal_gender,
       req.body.animal_desc,
       req.body.animal_picurl,
@@ -74,13 +75,14 @@ export const addAnimal = (req, res) => {
 // Função para atualizar um animal existente
 export const updateAnimal = (req, res) => {
   const sql =
-    "UPDATE animals SET `animal_name` = ?, `animal_type` = ?, `animal_age` = ?, `animal_size` = ?, `animal_gender` = ?, `animal_desc` = ?, `animal_picurl` = ?, `animal_avaliable` = ? WHERE `animal_id` = ?";
+    "UPDATE animals SET `animal_name` = ?, `animal_type` = ?, `animal_age` = ?, `animal_size` = ?, `animal_address` = ?, `animal_gender` = ?, `animal_desc` = ?, `animal_picurl` = ?, `animal_avaliable` = ? WHERE `animal_id` = ?";
 
   const values = [
     req.body.animal_name,
     req.body.animal_type,
     req.body.animal_age,
     req.body.animal_size,
+    req.body.animal_address,
     req.body.animal_gender,
     req.body.animal_desc,
     req.body.animal_picurl,
