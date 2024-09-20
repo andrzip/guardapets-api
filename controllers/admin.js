@@ -1,7 +1,7 @@
 import { db } from "../db.js";
 
-export const getWaitingAnimals = (req, res) => {
-    const sql = "SELECT * FROM animals WHERE `animal_avaliable` = 0";
+export const getAllAnimals = (req, res) => {
+    const sql = "SELECT * FROM animals"
 
     db.query(sql, (err, data) => {
         if (err) return res.json(err);
@@ -14,16 +14,25 @@ export const acceptAnimal = (req, res) => {
 
     db.query(sql, [req.params.id], (err) => {
         if (err) return res.json(err);
-        return res.status(200).json("Animal disponível");
+        return res.status(200).json("Animal disponível!");
     });
 }
 
 export const denyAnimal = (req, res) => {
+    const sql = "UPDATE animals SET `animal_avaliable` = 0 WHERE `animal_id` = ?";
+
+    db.query(sql, [req.params.id], (err) => {
+        if (err) return res.json(err);
+        return res.status(200).json("Animal negado!");
+    });
+}
+
+export const deleteAnimal = (req, res) => {
     const sql = "DELETE FROM animals WHERE `animal_id` = ?";
 
     db.query(sql, [req.params.id], (err) => {
         if (err) return res.json(err);
-        return res.status(200).json("Animal excluído");
+        return res.status(200).json("Animal excluído!");
     });
 }
 

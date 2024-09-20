@@ -30,11 +30,7 @@ export const addAnimal = (req, res) => {
     const decoded = verifyToken(token);
     const userId = decoded.user_id;
 
-    // Dados do animal a ser inserido
-    const insertAnimalQuery = `
-            INSERT INTO animals 
-            (animal_name, animal_type, animal_age, animal_size, animal_address, animal_gender, animal_desc, animal_picurl) 
-            VALUES (?)`;
+    const insertAnimalQuery = `INSERT INTO animals (animal_name, animal_type, animal_age, animal_size, animal_address, animal_gender, animal_desc, animal_picurl) VALUES (?)`;
 
     const animalData = [
       req.body.animal_name,
@@ -48,22 +44,18 @@ export const addAnimal = (req, res) => {
     ];
 
     db.query(insertAnimalQuery, [animalData], (err, result) => {
-      if (err)
-        return res
-          .status(500)
-          .json({ error: "Erro ao inserir animal", details: err });
+      if (err) {
+        return res.status(500).json({ error: "Erro ao inserir animal", details: err });
+      }
 
       const animalId = result.insertId;
-      const registerAnimalQuery = `
-                INSERT INTO registry (user_id, animal_id, adoption_date) 
-                VALUES (?, ?, ?)`;
+      const registerAnimalQuery = `INSERT INTO registry (user_id, animal_id, adoption_date) VALUES (?, ?, ?)`;
       const registryData = [userId, animalId, new Date()];
 
       db.query(registerAnimalQuery, registryData, (err) => {
-        if (err)
-          return res
-            .status(500)
-            .json({ error: "Erro ao registrar animal", details: err });
+        if (err){
+          return res.status(500).json({ error: "Erro ao registrar animal", details: err });
+        }
         return res.status(200).json("Animal criado e vinculado ao usuário!");
       });
     });
