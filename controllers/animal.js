@@ -1,5 +1,6 @@
-import { db } from "../db.js";
+import { db } from "../utils/db.js";
 import { verifyToken } from "../services/token.js";
+import cloudinary from "../utils/cloudinary.js";
 
 // Função para obter todos os animais
 export const getAnimals = (req, res) => {
@@ -22,7 +23,7 @@ export const getAnimal = (req, res) => {
 };
 
 // Função para adicionar um novo animal e vinculá-lo a um usuário
-export const addAnimal = (req, res) => {
+export const addAnimal = async (req, res) => {
   const token = req.cookies.token;
   if (!token) return res.status(401).json({ error: "Usuário não autenticado" });
 
@@ -32,7 +33,7 @@ export const addAnimal = (req, res) => {
 
     const insertAnimalQuery = `INSERT INTO animals (animal_name, animal_type, animal_age, animal_size, animal_address, animal_gender, animal_desc, animal_picurl) VALUES (?)`;
 
-    const animalData = [
+    let animalData = [
       req.body.animal_name,
       req.body.animal_type,
       req.body.animal_age,
@@ -40,8 +41,15 @@ export const addAnimal = (req, res) => {
       req.body.animal_address,
       req.body.animal_gender,
       req.body.animal_desc,
-      req.body.animal_picurl,
+      "",
     ];
+
+    try {
+      const result = await cloudinary.uploader.upload(req.file.path);
+      animalData[7] = result.url;
+    } catch (err) {
+      return res.status(500).json({ error: "Erro ao fazer o upload da imagem", details: err });
+    }
 
     db.query(insertAnimalQuery, [animalData], (err, result) => {
       if (err) {
@@ -53,14 +61,14 @@ export const addAnimal = (req, res) => {
       const registryData = [userId, animalId, new Date()];
 
       db.query(registerAnimalQuery, registryData, (err) => {
-        if (err){
+        if (err) {
           return res.status(500).json({ error: "Erro ao registrar animal", details: err });
         }
         return res.status(200).json("Animal criado e vinculado ao usuário!");
       });
     });
   } catch (error) {
-    return res.status(401).json({ error: "Token inválido ou expirado" });
+    return res.status(401).json({ error: "Ocorreu um erro ao adicionar o animal" });
   }
 };
 
