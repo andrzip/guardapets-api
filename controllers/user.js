@@ -38,18 +38,19 @@ export const getUsers = (req, res) => {
 
 export const addUser = (req, res) => {
   const sql =
-    "INSERT INTO users (`user_name`, `user_email`, `user_password`, `user_phone`, `user_doc`, `user_birthdate`, `user_address`, `user_state`, `user_city`) VALUES (?)";
+    "INSERT INTO users (`user_name`, `user_email`, `user_password`, `user_phone`, `user_cpf`, `user_birthdate`, `user_address`, `user_state`, `user_city`, `user_cep`) VALUES (?)";
 
   const values = [
     req.body.user_name,
     req.body.user_email,
     req.body.user_password,
     req.body.user_phone,
-    req.body.user_doc,
+    req.body.user_cpf,
     req.body.user_birthdate,
     req.body.user_address,
     req.body.user_state,
     req.body.user_city,
+    req.body.user_cep
   ];
 
   db.query(sql, [values], (err, data) => {
@@ -60,18 +61,19 @@ export const addUser = (req, res) => {
 
 export const updateUser = (req, res) => {
   const sql =
-    "UPDATE users SET `user_name` = ?, `user_email` = ?, `user_password` = ?, `user_phone` = ?, `user_doc` = ?, `user_birthdate` = ?, `user_address` = ?, `user_state` = ?, `user_city` = ? WHERE `user_id` = ?";
+    "UPDATE users SET `user_name` = ?, `user_email` = ?, `user_password` = ?, `user_phone` = ?, `user_cpf` = ?, `user_birthdate` = ?, `user_address` = ?, `user_state` = ?, `user_city` = ? `user_cep` = ? WHERE `user_id` = ?";
 
   const values = [
     req.body.user_name,
     req.body.user_email,
     req.body.user_password,
     req.body.user_phone,
-    req.body.user_doc,
+    req.body.user_cpf,
     req.body.user_birthdate,
     req.body.user_address,
     req.body.user_state,
     req.body.user_city,
+    req.body.user_cep
   ];
 
   db.query(sql, [...values, req.params.id], (err) => {
