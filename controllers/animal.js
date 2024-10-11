@@ -12,9 +12,9 @@ export const getAnimals = (req, res) => {
   });
 };
 
-// Função para obter um animal específico pelo ID
+// Função para obter animais pelo cep
 export const getAnimal = (req, res) => {
-  const sql = "SELECT * FROM animals WHERE `animal_id` = ?";
+  const sql = "SELECT * FROM animals WHERE `animal_cep` = ?";
 
   db.query(sql, [req.params.id], (err, data) => {
     if (err) return res.json(err);
@@ -31,7 +31,7 @@ export const addAnimal = async (req, res) => {
     const decoded = verifyToken(token);
     const userId = decoded.user_id;
 
-    const insertAnimalQuery = `INSERT INTO animals (animal_name, animal_type, animal_age, animal_size, animal_address, animal_gender, animal_desc, animal_picurl) VALUES (?)`;
+    const insertAnimalQuery = `INSERT INTO animals (animal_name, animal_type, animal_age, animal_size, animal_address, animal_cep, animal_gender, animal_desc, animal_picurl) VALUES (?)`;
 
     let animalData = [
       req.body.animal_name,
@@ -39,6 +39,7 @@ export const addAnimal = async (req, res) => {
       req.body.animal_age,
       req.body.animal_size,
       req.body.animal_address,
+      req.body.animal_cep,
       req.body.animal_gender,
       req.body.animal_desc,
       "",
@@ -46,7 +47,7 @@ export const addAnimal = async (req, res) => {
 
     try {
       const result = await cloudinary.uploader.upload(req.file.path);
-      animalData[7] = result.url;
+      animalData[8] = result.url;
     } catch (err) {
       return res.status(500).json({ error: "Erro ao fazer o upload da imagem", details: err });
     }
@@ -75,7 +76,7 @@ export const addAnimal = async (req, res) => {
 // Função para atualizar um animal existente
 export const updateAnimal = (req, res) => {
   const sql =
-    "UPDATE animals SET `animal_name` = ?, `animal_type` = ?, `animal_age` = ?, `animal_size` = ?, `animal_address` = ?, `animal_gender` = ?, `animal_desc` = ?, `animal_picurl` = ?, `animal_avaliable` = ? WHERE `animal_id` = ?";
+    "UPDATE animals SET `animal_name` = ?, `animal_type` = ?, `animal_age` = ?, `animal_size` = ?, `animal_address` = ?, `animal_cep` = ?, `animal_gender` = ?, `animal_desc` = ?, `animal_picurl` = ?, `animal_avaliable` = ? WHERE `animal_id` = ?";
 
   const values = [
     req.body.animal_name,
@@ -83,6 +84,7 @@ export const updateAnimal = (req, res) => {
     req.body.animal_age,
     req.body.animal_size,
     req.body.animal_address,
+    req.body.animal_cep, 
     req.body.animal_gender,
     req.body.animal_desc,
     req.body.animal_picurl,
