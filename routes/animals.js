@@ -4,7 +4,7 @@ import { getAnimals, getAnimal, addAnimal, updateAnimal, deleteAnimal } from "..
 
 const router = express.Router();
 
-router.get("/list", getAnimals);
+router.get("/list/:cep?", getAnimals);
 router.post("/view", getAnimal);
 router.post("/add", upload.single("animal_picurl"), addAnimal);
 router.put("/edit/:id", updateAnimal);

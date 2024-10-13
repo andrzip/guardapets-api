@@ -4,19 +4,29 @@ import cloudinary from "../utils/cloudinary.js";
 
 // Função para obter todos os animais
 export const getAnimals = (req, res) => {
-  const sql = "SELECT * FROM animals WHERE `animal_avaliable` = 1";
+  const { cep } = req.params;
+  let sql;
 
-  db.query(sql, (err, data) => {
-    if (err) return res.json(err);
-    return res.status(200).json(data);
-  });
+  if (cep) {
+    sql = "SELECT * FROM animals WHERE `animal_avaliable` = 1 AND `animal_cep` = ?";
+    db.query(sql, [cep], (err, data) => {
+      if (err) return res.json(err);
+      return res.status(200).json(data);
+    });
+  } else {
+    sql = "SELECT * FROM animals WHERE `animal_avaliable` = 1";
+    db.query(sql, (err, data) => {
+      if (err) return res.json(err);
+      return res.status(200).json(data);
+    });
+  }
 };
 
 // Função para obter animais pelo cep
 export const getAnimal = (req, res) => {
   const sql = "SELECT * FROM animals WHERE `animal_cep` = ?";
 
-  db.query(sql, [req.params.id], (err, data) => {
+  db.query(sql, [req.params.cep], (err, data) => {
     if (err) return res.json(err);
     return res.status(200).json(data);
   });
@@ -72,7 +82,6 @@ export const addAnimal = async (req, res) => {
     return res.status(401).json({ error: "Ocorreu um erro ao adicionar o animal" });
   }
 };
-
 // Função para atualizar um animal existente
 export const updateAnimal = (req, res) => {
   const sql =
@@ -99,18 +108,16 @@ export const updateAnimal = (req, res) => {
 
 // Função para deletar um animal
 export const deleteAnimal = (req, res) => {
-  const animalId = req.params.id;
-
   // Deletar primeiro os registros na tabela registry
   const sqlDeleteRegistry = "DELETE FROM registry WHERE `animal_id` = ?";
 
-  db.query(sqlDeleteRegistry, [animalId], (err) => {
+  db.query(sqlDeleteRegistry, [req.params.id], (err) => {
     if (err) return res.json(err);
 
     // Agora deletar o animal da tabela animals
     const sqlDeleteAnimal = "DELETE FROM animals WHERE `animal_id` = ?";
 
-    db.query(sqlDeleteAnimal, [animalId], (err) => {
+    db.query(sqlDeleteAnimal, [req.params.id], (err) => {
       if (err) return res.json(err);
       return res.status(200).json("Animal e registros associados deletados!");
     });
