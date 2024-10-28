@@ -22,11 +22,11 @@ export const getAnimals = (req, res) => {
   }
 };
 
-// Função para obter animais pelo cep
+// Função para obter animais pelo id
 export const getAnimal = (req, res) => {
-  const sql = "SELECT * FROM animals WHERE `animal_cep` = ?";
+  const sql = "SELECT * FROM animals WHERE `animal_id` = ?";
 
-  db.query(sql, [req.params.cep], (err, data) => {
+  db.query(sql, [req.params.id], (err, data) => {
     if (err) return res.json(err);
     return res.status(200).json(data);
   });

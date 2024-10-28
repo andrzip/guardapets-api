@@ -27,15 +27,6 @@ export const getUser = (req, res) => {
   });
 };
 
-export const getUsers = (req, res) => {
-  const sql = "SELECT * FROM users";
-
-  db.query(sql, (err, data) => {
-    if (err) return res.json(err);
-    return res.status(200).json(data);
-  });
-};
-
 export const addUser = (req, res) => {
   const sql =
     "INSERT INTO users (`user_name`, `user_email`, `user_password`, `user_phone`, `user_cpf`, `user_birthdate`, `user_address`, `user_state`, `user_city`, `user_cep`) VALUES (?)";
@@ -61,7 +52,7 @@ export const addUser = (req, res) => {
 
 export const updateUser = (req, res) => {
   const sql =
-    "UPDATE users SET `user_name` = ?, `user_email` = ?, `user_password` = ?, `user_phone` = ?, `user_cpf` = ?, `user_birthdate` = ?, `user_address` = ?, `user_state` = ?, `user_city` = ? `user_cep` = ? WHERE `user_id` = ?";
+    "UPDATE users SET `user_name` = ?, `user_email` = ?, `user_password` = ?, `user_phone` = ?, `user_cpf` = ?, `user_birthdate` = ?, `user_address` = ?, `user_state` = ?, `user_city` = ?,`user_cep` = ? WHERE `user_id` = ?";
 
   const values = [
     req.body.user_name,
@@ -73,7 +64,7 @@ export const updateUser = (req, res) => {
     req.body.user_address,
     req.body.user_state,
     req.body.user_city,
-    req.body.user_cep
+    req.body.user_cep,
   ];
 
   db.query(sql, [...values, req.params.id], (err) => {
@@ -91,6 +82,19 @@ export const deleteUser = (req, res) => {
   });
 };
 
+export const getProfile = (req, res) => {
+  const sql = "SELECT * FROM users WHERE `user_id` = ?";
+
+  try {
+    db.query(sql, [req.params.id], (err, data) => {
+      if (err) return res.json(err);
+      return res.status(200).json(data);
+    });
+  } catch (error) {
+    return res.status(500).json({ error: "Erro durante a requisição" });
+  }
+};
+
 export const verifyUserToken = (req, res) => {
   const token = req.cookies.token;
 
@@ -100,6 +104,7 @@ export const verifyUserToken = (req, res) => {
 
   try {
     const decoded = verifyToken(token);
+
     return res.status(200).json({ user: decoded });
   } catch (error) {
     return res.status(401).json({ error: "Token inválido ou expirado" });
