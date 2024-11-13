@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 
-const expires = 60 * 60 * 24 * 30 * 1000;
+const expires = 60 * 60 * 24 * 1 * 1000;
 
 export const generateToken = (userData) => {
   const payload = {
