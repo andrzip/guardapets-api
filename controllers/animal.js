@@ -123,3 +123,26 @@ export const deleteAnimal = (req, res) => {
     });
   });
 };
+
+
+export const donorContact = (req, res) => {
+  const animal_id = req.params.id;
+
+  db.query(`
+    SELECT u.user_phone
+    FROM registry r
+    JOIN users u ON r.user_id = u.user_id
+    WHERE r.animal_id = ?
+  `, [animal_id], (err, result) => {
+    if (err) {
+      console.error("Erro ao buscar contato do doador:", err);
+      res.status(500).json({ message: "Erro interno" });
+    } else {
+      if (result.length > 0) {
+        res.json({ phone: result[0].user_phone });
+      } else {
+        res.status(404).json({ message: "Contato não encontrado" });
+      }
+    }
+  });
+};
