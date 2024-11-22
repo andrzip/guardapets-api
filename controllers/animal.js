@@ -9,7 +9,7 @@ export const getAnimals = (req, res) => {
 
   if (cep) {
     sql = `
-      SELECT a.*, u.user_cep, u.user_city, u.user_state
+      SELECT a.*, u.user_name, u.user_cep, u.user_city, u.user_state
       FROM animals a
       LEFT JOIN registry r ON a.animal_id = r.animal_id
       LEFT JOIN users u ON r.user_id = u.user_id
@@ -21,7 +21,7 @@ export const getAnimals = (req, res) => {
     });
   } else {
     sql = `
-    SELECT a.*, u.user_city, u.user_state
+    SELECT a.*, u.user_name, u.user_city, u.user_state
     FROM animals a
     LEFT JOIN registry r ON a.animal_id = r.animal_id
     LEFT JOIN users u ON r.user_id = u.user_id
@@ -37,7 +37,7 @@ export const getAnimals = (req, res) => {
 // Função para obter animais pelo id
 export const getAnimal = (req, res) => {
   const sql = `
-    SELECT a.*, u.user_phone, u.user_city, u.user_state, u.user_address
+    SELECT a.*, u.user_name, u.user_email, u.user_phone, u.user_city, u.user_state, u.user_address
     FROM animals a
     LEFT JOIN registry r ON a.animal_id = r.animal_id
     LEFT JOIN users u ON r.user_id = u.user_id
@@ -69,15 +69,13 @@ export const addAnimal = async (req, res) => {
     const decoded = verifyToken(token);
     const userId = decoded.user_id;
 
-    const insertAnimalQuery = `INSERT INTO animals (animal_name, animal_type, animal_age, animal_size, animal_address, animal_cep, animal_gender, animal_desc, animal_picurl) VALUES (?)`;
+    const insertAnimalQuery = `INSERT INTO animals (animal_name, animal_age, animal_type, animal_size, animal_gender, animal_desc, animal_picurl) VALUES (?)`;
 
     let animalData = [
       req.body.animal_name,
-      req.body.animal_type,
       req.body.animal_age,
+      req.body.animal_type,
       req.body.animal_size,
-      req.body.animal_address,
-      req.body.animal_cep,
       req.body.animal_gender,
       req.body.animal_desc,
       "",
@@ -85,7 +83,7 @@ export const addAnimal = async (req, res) => {
 
     try {
       const result = await cloudinary.uploader.upload(req.file.path);
-      animalData[8] = result.url;
+      animalData[6] = result.url;
     } catch (err) {
       return res.status(500).json({ message: "Erro ao fazer o upload da imagem", details: err });
     }
