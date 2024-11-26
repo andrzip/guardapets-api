@@ -4,34 +4,50 @@ import cloudinary from "../utils/cloudinary.js";
 
 // Função para obter todos os animais
 export const getAnimals = (req, res) => {
-  const { cep } = req.params;
-  let sql;
-
-  if (cep) {
-    sql = `
-      SELECT a.*, u.user_name, u.user_cep, u.user_city, u.user_state
-      FROM animals a
-      LEFT JOIN registry r ON a.animal_id = r.animal_id
-      LEFT JOIN users u ON r.user_id = u.user_id
-      WHERE a.animal_avaliable = 1 AND u.user_cep = ?
-    `;
-    db.query(sql, [cep], (err, data) => {
-      if (err) return res.status(500).json({ message: "Erro ao obter animais", details: err });
-      return res.status(200).json(data);
-    });
-  } else {
-    sql = `
-    SELECT a.*, u.user_name, u.user_city, u.user_state
+  const { cep, name, type, age, size, gender } = req.query;
+  let sql = `
+    SELECT a.*, u.user_name, u.user_cep, u.user_city, u.user_state
     FROM animals a
     LEFT JOIN registry r ON a.animal_id = r.animal_id
     LEFT JOIN users u ON r.user_id = u.user_id
     WHERE a.animal_avaliable = 1
   `;
-    db.query(sql, (err, data) => {
-      if (err) return res.status(500).json({ message: "Erro ao obter animais", details: err });
-      return res.status(200).json(data);
-    });
+  let filters = [];
+
+  if (cep) {
+    sql += ` AND u.user_cep = ?`;
+    filters.push(cep);
   }
+  
+  if (name) {
+    sql += ` AND a.animal_name LIKE ?`;
+    filters.push(`%${name}%`);
+  }
+  
+  if (type) {
+    sql += ` AND a.animal_type = ?`;
+    filters.push(type);
+  }
+  
+  if (age) {
+    sql += ` AND a.animal_age = ?`;
+    filters.push(age);
+  }
+
+  if (size) {
+    sql += ` AND a.animal_size = ?`;
+    filters.push(size);
+  }
+
+  if (gender) {
+    sql += ` AND a.animal_gender = ?`;
+    filters.push(gender);
+  }
+
+  db.query(sql, filters, (err, data) => {
+    if (err) return res.status(500).json({ message: "Erro ao obter animais", details: err });
+    return res.status(200).json(data);
+  });
 };
 
 // Função para obter animais pelo id
