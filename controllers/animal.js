@@ -4,7 +4,7 @@ import cloudinary from "../utils/cloudinary.js";
 
 // Função para obter todos os animais
 export const getAnimals = (req, res) => {
-  const { cep, name, type, age, size, gender } = req.query;
+  const { cep, type, age, size, gender } = req.query;
   let sql = `
     SELECT a.*, u.user_name, u.user_cep, u.user_city, u.user_state
     FROM animals a
@@ -17,11 +17,6 @@ export const getAnimals = (req, res) => {
   if (cep) {
     sql += ` AND u.user_cep = ?`;
     filters.push(cep);
-  }
-  
-  if (name) {
-    sql += ` AND a.animal_name LIKE ?`;
-    filters.push(`%${name}%`);
   }
   
   if (type) {
