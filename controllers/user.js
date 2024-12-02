@@ -8,6 +8,7 @@ import {
 
 // Função auxiliar para enviar resposta de erro
 const sendErrorResponse = (res, message, status = 500) => {
+  console.error(res);
   return res.status(status).json({ error: message });
 };
 
@@ -83,11 +84,20 @@ export const deleteUser = (req, res) => {
 
 // Obter perfil de usuário
 export const getProfile = (req, res) => {
-  const sql = "SELECT * FROM users WHERE `user_id` = ?";
+  const userSql = `SELECT * FROM users WHERE user_id = ?`;
+  const animalsSql = `
+    SELECT a.*
+    FROM registry r
+    LEFT JOIN animals a ON r.animal_id = a.animal_id
+    WHERE r.user_id = ? AND a.animal_avaliable = 1
+  `;
 
-  db.query(sql, [req.params.id], (err, data) => {
-    if (err) return sendErrorResponse(res, "Erro ao recuperar perfil");
-    return res.status(200).json(data);
+  db.query(userSql, [req.params.id], (err, userData) => {
+    if (err) return sendErrorResponse(res, "Erro ao recuperar usuário");
+    db.query(animalsSql, [req.params.id], (err, animalsData) => {
+      if (err) return sendErrorResponse(res, "Erro ao recuperar animais");
+      return res.status(200).json({ user: userData[0], animals: animalsData });
+    });
   });
 };
 

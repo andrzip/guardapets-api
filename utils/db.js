@@ -15,6 +15,6 @@ db.connect((err) => {
     return;
   }
   console.log(
-    `✅ - Database Conectada! HOST -> [${process.env.MYSQLDATABASE}]`
+    `✅ - Database Conectada! HOST -> [${process.env.MYSQLHOST}]`
   );
 });
