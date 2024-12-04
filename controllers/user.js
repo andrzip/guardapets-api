@@ -8,7 +8,7 @@ import {
 
 // Função auxiliar para enviar resposta de erro
 const sendErrorResponse = (res, message, status = 500) => {
-  console.error(res);
+  console.log("[ERRO BACKEND] -> ", res);
   return res.status(status).json({ error: message });
 };
 
@@ -27,9 +27,7 @@ export const getUser = (req, res) => {
     }
 
     const validPassword = await bcrypt.compare(user_password, userData[0].user_password);
-    if (!validPassword) {
-      return res.status(401).json({ message: "Credenciais de login incorretas 123" });
-    }
+    if (!validPassword) return res.status(401).json({ message: "Credenciais de login incorretas!" });
 
     const accessToken = generateToken(userData[0]);
     setTokenCookie(res, accessToken);
@@ -57,19 +55,45 @@ export const addUser = async (req, res) => {
   ];
 
   db.query(sql, [values], (err) => {
-    if (err) return sendErrorResponse(res, "Erro ao criar usuário");
+    if (err) return console.log("ERRO ADD USER ->", err);
     return res.status(200).json("Usuário criado!");
   });
 };
 
 // Atualizar usuário
 export const updateUser = (req, res) => {
-  const sql = "UPDATE users SET `user_name` = ?, `user_email` = ?, `user_password` = ?, `user_phone` = ?, `user_cpf` = ?, `user_birthdate` = ?, `user_address` = ?, `user_state` = ?, `user_city` = ?, `user_cep` = ? WHERE `user_id` = ?";
+  const fieldsToUpdate = [];
+    const values = [];
 
-  db.query(sql, [...Object.values(req.body), req.params.id], (err) => {
-    if (err) return sendErrorResponse(res, "Erro ao atualizar usuário");
-    return res.status(200).json("Usuário atualizado!");
-  });
+    const updatableFields = [
+        "user_name",
+        "user_email",
+        "user_password",
+        "user_phone",
+        "user_cpf",
+        "user_birthdate",
+        "user_address",
+        "user_state",
+        "user_city",
+        "user_cep",
+    ];
+
+    updatableFields.forEach((field) => {
+        if (req.body[field] !== undefined) {
+            fieldsToUpdate.push(`${field} = ?`);
+            values.push(req.body[field]);
+        }
+    });
+
+    if (fieldsToUpdate.length === 0) return res.status(400).json({ message: "Nenhum campo para atualizar." });
+
+    const sql = `UPDATE users SET ${fieldsToUpdate.join(", ")} WHERE user_id = ?`;
+    values.push(req.params.id);
+
+    db.query(sql, values, (err) => {
+        if (err) return res.status(500).json({ message: "Erro ao atualizar animal", details: err });
+        return res.status(200).json("Usuário atualizado com sucesso!");
+    });
 };
 
 // Deletar usuário

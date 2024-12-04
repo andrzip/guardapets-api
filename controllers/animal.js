@@ -120,25 +120,35 @@ export const addAnimal = async (req, res) => {
 
 // Função para atualizar um animal existente
 export const updateAnimal = (req, res) => {
-  const sql =
-    "UPDATE animals SET `animal_name` = ?, `animal_type` = ?, `animal_age` = ?, `animal_size` = ?, `animal_address` = ?, `animal_cep` = ?, `animal_gender` = ?, `animal_desc` = ?, `animal_picurl` = ?, `animal_avaliable` = ? WHERE `animal_id` = ?";
+  const fieldsToUpdate = [];
+  const values = [];
 
-  const values = [
-    req.body.animal_name,
-    req.body.animal_type,
-    req.body.animal_age,
-    req.body.animal_size,
-    req.body.animal_address,
-    req.body.animal_cep, 
-    req.body.animal_gender,
-    req.body.animal_desc,
-    req.body.animal_picurl,
-    req.body.animal_avaliable,
+  const updatableFields = [
+    "animal_name",
+    "animal_type",
+    "animal_age",
+    "animal_size",
+    "animal_gender",
+    "animal_desc",
+    "animal_picurl",
+    "animal_avaliable",
   ];
 
-  db.query(sql, [...values, req.params.id], (err) => {
+  updatableFields.forEach((field) => {
+    if (req.body[field] !== undefined) {
+      fieldsToUpdate.push(`${field} = ?`);
+      values.push(req.body[field]);
+    }
+  });
+
+  if (fieldsToUpdate.length === 0) return res.status(400).json({ message: "Nenhum campo para atualizar." });
+
+  const sql = `UPDATE animals SET ${fieldsToUpdate.join(", ")} WHERE animal_id = ?`;
+  values.push(req.params.id);
+
+  db.query(sql, values, (err) => {
     if (err) return res.status(500).json({ message: "Erro ao atualizar animal", details: err });
-    return res.status(200).json("Animal atualizado!");
+    return res.status(200).json("Animal atualizado com sucesso!");
   });
 };
 
